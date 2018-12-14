@@ -1,19 +1,17 @@
 #!/usr/bin/python3
 # Script that runs the CalibrationFits.py 
-# Enters settings for MerlinEM calibrations with DACs:
-# Preamp = 100
-# Shaper = 100
-# Ikrum = 255
+# Enters options without further human interaction for MerlinX calibrations 
 
 import sys
-sys.path.insert(0, '/Users/richard/merlin/merlin-tcp-calibration/CaliTools')
-sys.path.insert(0, '/Users/richard/merlin/merlin-tcp-calibration/inputParams')
 import os
 from subprocess import PIPE, Popen
 import time
 from matplotlib import pyplot
-path_to_file = '/Users/richard/merlin/merlin-tcp-calibration/CaliTools/CalibrationFits.py'
 from numpy import arange
+
+sys.path.insert(0, '/Users/richard/merlin/merlin-tcp-calibration/CaliTools')
+sys.path.insert(0, '/Users/richard/merlin/merlin-tcp-calibration/inputParams')
+path_to_file = '/Users/richard/merlin/merlin-tcp-calibration/CaliTools/CalibrationFits.py'
 
 # options is a list of strings with options as asked for when running CalibrationFits.py 
 def run_CalibrationFits(options,filepath):
