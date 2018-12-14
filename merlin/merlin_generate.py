@@ -1,15 +1,14 @@
 #!/usr/bin/python3
-# Script that runs the CalibrationFits.py 
-# Enters settings for MerlinEM calibrations with DACs:
-from merlin_fits_highIkrum import run_CalibrationFits
+# Script that generates all new Threshold Files using generateCalibFiles.py 
+from MerlinX_CalibrationFits import run_CalibrationFits
 path_to_file = '/Users/richard/merlin/merlin-tcp-calibration/CaliTools/generateCalibFiles.py'
 
 def main():
     
-    ChipID_select = ['7']
-    Scan_select   = ['0']
+    ChipID_select = ['21']
+    Scan_select   = ['3']
     Opmode_select = ['0','1']
-    Gain_select   = ['0','1','2','3']
+    Gain_select   = ['0','1']#,'2','3']
     Chip1_yes   = ['1']
     Chip2_yes   = ['1']
     Chip3_yes   = ['1']
@@ -20,11 +19,5 @@ def main():
             opts = ChipID_select + Scan_select + [opmode] + [gain] + Chip1_yes + Chip2_yes + Chip3_yes + Chip4_yes
             run_CalibrationFits(opts,path_to_file)
     
-
 if __name__=='__main__':
     main()
-
-
-
-
-

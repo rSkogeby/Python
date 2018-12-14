@@ -1,19 +1,20 @@
 #!/usr/bin/python3
 # Script that runs the CalibrationFits.py 
-# Enters settings for MerlinEM calibrations with DACs:
+# Enters options without further human interaction for MerlinX calibrations 
 # Preamp = 100
 # Shaper = 100
 # Ikrum = 255
 
 import sys
-sys.path.insert(0, '/Users/richard/merlin/merlin-tcp-calibration/CaliTools')
-sys.path.insert(0, '/Users/richard/merlin/merlin-tcp-calibration/inputParams')
 import os
 from subprocess import PIPE, Popen
 import time
 from matplotlib import pyplot
-path_to_file = '/Users/richard/merlin/merlin-tcp-calibration/CaliTools/CalibrationFits.py'
 from numpy import arange
+
+sys.path.insert(0, '/Users/richard/merlin/merlin-tcp-calibration/CaliTools')
+sys.path.insert(0, '/Users/richard/merlin/merlin-tcp-calibration/inputParams')
+path_to_file = '/Users/richard/merlin/merlin-tcp-calibration/CaliTools/CalibrationFits.py'
 
 # options is a list of strings with options as asked for when running CalibrationFits.py 
 def run_CalibrationFits(options,filepath):
@@ -25,16 +26,21 @@ def run_CalibrationFits(options,filepath):
 
 def main():
     
+# Single
+# 21
+# 0-12 except 3
+# SPM: 0 5 7 8 9 12
+# CSM: 1 2 4 6 10 11
+# 
+#
 
-    ChipID_select = ['7']
+    ChipID_select = ['21']
     # Options 1-24 for metal select
-    All_modes     = [str(i+1) for i in arange(24)]
-    Cu_SPM        = ['1','3','5','6']
-    Zr_SPM        = ['9','15','20','21']
-    Ag_SPM        = ['7','8','10','16']
-    CSM           = list(set(All_modes)-set(Cu_SPM)-set(Zr_SPM)-set(Ag_SPM))
-    Metal_select  = Cu_SPM+Zr_SPM+Ag_SPM + CSM
-    Fit_select    = ['1'] #1 for Doublegauss, 2 for single, 3 for singlep, 4 for doublep
+    All_modes     = [str(i) for i in arange(13)]
+    SPM           = ['0','5','7','8','9','12']
+    CSM           = list(set(All_modes)-set(SPM)-set('3'))
+    Scan_select   = SPM+CSM
+    Fit_select    = ['2'] #1 for Doublegauss, 2 for single, 3 for singlep, 4 for doublep
     Fit_options   = []
     if '3' in Fit_select or '4' in Fit_select:
         Chip1_options = [
@@ -62,18 +68,9 @@ def main():
         Fit_options = Chip1_options + Chip2_options + Chip3_options + Chip4_options
         print(Fit_options)
         input()
-    for metal in Metal_select:
-        if metal in Cu_SPM:
-            Fit_select = ['2']
-        elif metal in Zr_SPM or metal in Ag_SPM:    
-            Fit_select = ['1']
-        elif metal in CSM:
-            Fit_select = ['2']
-        opts = ChipID_select + [metal] + Fit_select + Fit_options
+    for scan in Scan_select:
+        opts = ChipID_select + [scan] + Fit_select + Fit_options
         run_CalibrationFits(opts,path_to_file)
-    
-    
-
     
 
 if __name__=="__main__":
