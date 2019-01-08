@@ -5,7 +5,6 @@ import matplotlib.gridspec as gridspec
 import numpy as np
 import matplotlib.mlab as mlab
 import math
-#import seaborn as sns
 import pandas as pd
 from scipy.stats import norm
 
@@ -15,28 +14,44 @@ apply_default_plot_style()
 
 
 class Gaus:
-    def __init__(self, x, amp: float, mu: float, sigma: float):
+    """Class for generating a Gaussian on the form Gaus.equation() with
+        norm 1 times area, mean at mu and standard deviation of sigma.
+        x is a numpy.ndarray of arbitrary size, respective y values for
+        the generated gaussian can be accessed through Gaus.y.
+    """
+
+    def __init__(self, x, area: float, mu: float, sigma: float):
         self.x = x
-        self.amp = amp
+        self.area = area
         self.mu = mu
         self.sigma = sigma
-        self.y = self.amp/np.sqrt(2*np.pi*self.sigma**2) * \
+        self.y = self.area/np.sqrt(2*np.pi*self.sigma**2) * \
             np.exp(-(self.x-self.mu)**2/(2*self.sigma**2))
 
     def equation(self):
-        return 'f(x)=amp/sqrt(2 pi sigma^2) exp(-(x-mu)^2/(2 sigma^2))'
+        return 'f(x)=area/sqrt(2 pi sigma^2) exp(-(x-mu)^2/(2 sigma^2))'
 
     def generate(self):
-        self.y = self.amp/np.sqrt(2*np.pi*self.sigma**2) * \
+        self.y = self.area/np.sqrt(2*np.pi*self.sigma**2) * \
             np.exp(-(self.x-self.mu)**2/(2*self.sigma**2))
 
 
 def main():
+    """Plots and formats a Gaussian. Formatting is done almost independently
+    from what's plotted. As long as xs, func_1 and func_2 are properly filled
+    in aspet ratios should be kept and text should stay in place.    
+    """
 
-    # Function to be plotted
+    # Function to be plotted, this is the only hard-coded part
     xs = [(0,40),(60,100)]
-    func_1 = Gaus(np.linspace(xs[0][0], xs[0][1], 1000), amp=150., mu=20., sigma=4.)
-    func_2 = Gaus(np.linspace(xs[1][0], xs[1][1], 1000), amp=150., mu=80., sigma=4.)
+    func_1 = Gaus(np.linspace(xs[0][0], xs[0][1], 1000), area=150., mu=20., sigma=4.)
+    func_2 = Gaus(np.linspace(xs[1][0], xs[1][1], 1000), area=150., mu=80., sigma=4.)
+    func_1.legend = 'Low DACDiscL'
+    func_2.legend = 'High DACDiscL'
+    main_plot_title = 'Two towers - an alternative story.'
+    sub_plot_title = 'Simulated cumulative noise peaks over all pixels of a Merlin detector using a low\nand a high DACDiscL setting respectively.'    
+    x_label = 'Summed noise peaks over all pixels [DAC]'
+    y_label = 'Amplitude'
 
     # Determine min and max y values from functions
     ys=[(np.amin(func_1.y),np.amax(func_1.y)),(np.amin(func_2.y),np.amax(func_2.y))]
@@ -49,14 +64,14 @@ def main():
     ax = plt.gca()
 
     # Plot
-    f1h = ax.plot(func_1.x, func_1.y, color=colors[0])
-    f2h = ax.plot(func_2.x, func_2.y, color=colors[1])
+    ax.plot(func_1.x, func_1.y, color=colors[0])
+    ax.plot(func_2.x, func_2.y, color=colors[1])
 
     # Formatting ax
     ax.set_xlim(np.min(xs)-0.03*np.max(xs), np.max(xs)+np.max(xs)*0.1)
     ax.set_ylim(np.min(ys)-0.05*np.max(ys), np.max(ys)+np.max(ys)*0.25)
-    ax.set_xlabel('Summed noise peaks over all pixels [DAC]')
-    ax.set_ylabel('Amplitude')
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
     ax.tick_params(axis='both', which='major', labelsize=18)
     ax.axhline(y=0, color='black', linewidth=1.3, alpha=.7)
     facecolor = (0.9, 0.9, 0.9)  # Default: '#f0f0f0'
@@ -74,10 +89,7 @@ def main():
     xlims = ax.get_xlim()
     ylims = ax.get_ylim()
 
-    # Annotate noise peaks
-    func_1.legend = 'Low DACDiscL'
-    func_2.legend = 'High DACDiscL'
-    # Annotated point set to top of Gaussian
+    # Annotated point set to top of Gaussiana
     xy = (func_1.mu, np.amax(func_1.y))
     x_str = xy[0] - (xlims[1]-xlims[0])*0.07
     y_str = xy[1] - (ylims[1]-ylims[0])*0.4  # Offset annotated point by 3%
@@ -96,12 +108,11 @@ def main():
                 rotation=80)
 
     # Set title
-    main_title = 'Two towers - an alternative story.'
-    sub_title = 'Simulated cumulative noise peaks over all pixels of a Merlin detector using a low\nand a high DACDiscL setting respectively.'
+    main_title = main_plot_title
+    sub_title = sub_plot_title
     x_centre = (xlims[1]-xlims[0])/2
     y_main = (ylims[1]-ylims[0])*1.10
     y_sub = y_main-(ylims[1]-ylims[0])*0.10
-    xy_main_title = (x_centre, y_top)
     ax.text(x_centre, y_main, main_title, fontsize=26,
             weight='bold', alpha=.75, ha='center', va='bottom')
     ax.text(x_centre, y_sub, sub_title, fontsize=19,
